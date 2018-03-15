@@ -1,0 +1,13 @@
+extends layout
+
+block content
+    div.content#content
+        div.microphone-container#microphone-switcher
+            div.microphone-voice
+            div.microphone-support
+            div.microphone-base
+            div.microphone-state
+        div.microphone-volume
+
+    audio#alarm-element
+        source(src="/sound/shush.mp3" type="audio/mpeg")
