@@ -1,6 +1,7 @@
 const $elementMicrophoneEffect = document.querySelector(".microphone-volume");
 const $elementSound = document.querySelector("#alarm-element");
 const $elementContent = document.querySelector("#content");
+var intervalToMeasureHighAudio = null;
 
 var volumeMeter = {
     effectMicrophone: 0,
@@ -53,21 +54,32 @@ var volumeMeter = {
 
     updateEffectMicrophone: function(volume) {
         volume = volume || 0;
-        volumeMeter.effectMicrophone = Math.round(volumeMeter.sizeElementMicrophone + volume);
 
+        volumeMeter.effectMicrophone = Math.round(volumeMeter.sizeElementMicrophone + volume);
         $elementMicrophoneEffect.style.width = volumeMeter.effectMicrophone + "px";
         $elementMicrophoneEffect.style.height = volumeMeter.effectMicrophone + "px";
 
         if(volume > volumeMeter.mediumSound) {
-            // TODO: alerta, obter média
+            var init = Date.now();
 
-            console.log('Barulho em excesso, alerta disparado.');
+            if(intervalToMeasureHighAudio == null) {
+                intervalToMeasureHighAudio = setInterval(function() {
+                    if((Date.now() - init) > 1500) {
+                        console.log('Muito barulho');
 
-            $elementSound.volume = 1;
-            $elementSound.play();
+                        $elementSound.volume = 1;
+                        $elementSound.play();
+                    }
+                }, 4);
+            }
 
             $elementContent.style.background = "#c0392b";
         } else {
+            clearInterval(intervalToMeasureHighAudio);
+            intervalToMeasureHighAudio = null;
+
+            $elementSound.volume = 0;
+
             $elementContent.style.background = "#002f58";
         }
     }
