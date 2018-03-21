@@ -9,6 +9,8 @@ var volumeMeter = {
     mediumSound: 100,
     sizeElementMicrophone: document.getElementById("microphone-switcher").offsetWidth + 5,
     secondsSound: 2000,
+    medias: new Array(),
+    media: 0,
 
     createAudioMeter: function(audioContext, clipLevel, averaging, clipLag) {
         var processor = audioContext.createScriptProcessor(512);
@@ -87,13 +89,18 @@ var volumeMeter = {
                 $elementContent.style.background = "#002f58";
             }
 
-        } else { 
+        } else {
 
-            if (volume > this.mediumSound) {
-                this.mediumSound = volume;
-                console.log("*** Medium sound update: " + this.mediumSound + " ***");
-            } else {
-                console.log("Medium: " + this.mediumSound);
+            if(volume != 0) {
+                volumeMeter.medias.push(volume);
+
+                volumeMeter.media = volumeMeter.medias.reduce(function(a, b) {
+                    return a + b;
+                });
+
+                volumeMeter.media = volumeMeter.media / volumeMeter.medias.length;
+
+                console.log('Media: ' + volumeMeter.media);
             }
 
         }
