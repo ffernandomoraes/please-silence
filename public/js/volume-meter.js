@@ -2,11 +2,13 @@ const $elementMicrophoneEffect = document.querySelector(".microphone-volume");
 const $elementSound = document.querySelector("#alarm-element");
 const $elementContent = document.querySelector("#content");
 var intervalToMeasureHighAudio = null;
+const getMediumSound = true;
 
 var volumeMeter = {
     effectMicrophone: 0,
     mediumSound: 100,
     sizeElementMicrophone: document.getElementById("microphone-switcher").offsetWidth + 5,
+    secondsSound: 2000,
 
     createAudioMeter: function(audioContext, clipLevel, averaging, clipLag) {
         var processor = audioContext.createScriptProcessor(512);
@@ -55,32 +57,45 @@ var volumeMeter = {
     updateEffectMicrophone: function(volume) {
         volume = volume || 0;
 
-        volumeMeter.effectMicrophone = Math.round(volumeMeter.sizeElementMicrophone + volume);
-        $elementMicrophoneEffect.style.width = volumeMeter.effectMicrophone + "px";
-        $elementMicrophoneEffect.style.height = volumeMeter.effectMicrophone + "px";
+        if(!getMediumSound) {
 
-        if(volume > volumeMeter.mediumSound) {
-            var init = Date.now();
+            volumeMeter.effectMicrophone = Math.round(volumeMeter.sizeElementMicrophone + volume);
+            $elementMicrophoneEffect.style.width = volumeMeter.effectMicrophone + "px";
+            $elementMicrophoneEffect.style.height = volumeMeter.effectMicrophone + "px";
 
-            if(intervalToMeasureHighAudio == null) {
-                intervalToMeasureHighAudio = setInterval(function() {
-                    if((Date.now() - init) > 1500) {
-                        console.log('Muito barulho');
+            if(volume > volumeMeter.mediumSound) {
+                var init = Date.now();
 
-                        $elementSound.volume = 1;
-                        $elementSound.play();
-                    }
-                }, 4);
+                if(intervalToMeasureHighAudio == null) {
+                    intervalToMeasureHighAudio = setInterval(function() {
+                        if((Date.now() - init) > 2000) {
+                            console.log('Muito barulho');
+
+                            $elementSound.volume = 1;
+                            $elementSound.play();
+                        }
+                    }, 5);
+                }
+
+                $elementContent.style.background = "#c0392b";
+            } else {
+                clearInterval(intervalToMeasureHighAudio);
+                intervalToMeasureHighAudio = null;
+
+                $elementSound.volume = 0.5;
+
+                $elementContent.style.background = "#002f58";
             }
 
-            $elementContent.style.background = "#c0392b";
-        } else {
-            clearInterval(intervalToMeasureHighAudio);
-            intervalToMeasureHighAudio = null;
+        } else { 
 
-            $elementSound.volume = 0;
+            if (volume > this.mediumSound) {
+                this.mediumSound = volume;
+                console.log("*** Medium sound update: " + this.mediumSound + " ***");
+            } else {
+                console.log("Medium: " + this.mediumSound);
+            }
 
-            $elementContent.style.background = "#002f58";
         }
     }
 }
