@@ -100,7 +100,7 @@ var volumeMeter = {
 
                 volumeMeter.media = volumeMeter.media / volumeMeter.medias.length;
 
-                console.log('Media: ' + volumeMeter.media);
+                console.log('Media: ' + Math.floor(volumeMeter.media));
             }
 
         }
